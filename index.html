@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Admin Panel | Oficios Sierras Web</title>
+
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    
+    <!-- CDNs de Estilos (Bootstrap, Iconos) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Variables Modo Claro */
+        :root {
+            --primary-color: #0284C7; 
+            --primary-dark: #0369A1;
+            --primary-light: rgba(2, 132, 199, 0.1);
+            --text-dark: #0F172A;
+            --text-gray: #475569;
+            --bg-light: #F8FAFC;
+            --white: #FFFFFF;
+            --nav-bg: rgba(255, 255, 255, 0.85);
+            --border-color: #E2E8F0;
+            --pattern-color: #cbd5e1;
+            --font-main: 'Inter', sans-serif;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.4s;
+            --radius-md: 16px;
+        }
+
+        /* Variables Modo Oscuro */
+        [data-theme="dark"] {
+            --text-dark: #F8FAFC;
+            --text-gray: #94A3B8;
+            --bg-light: #0F172A;
+            --white: #1E293B;
+            --nav-bg: rgba(30, 41, 59, 0.85);
+            --border-color: #334155;
+            --pattern-color: #334155;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        * { font-family: var(--font-main); }
+        
+        body { 
+            color: var(--text-dark); 
+            background-color: var(--bg-light); 
+            transition: background-color var(--transition-speed), color var(--transition-speed); 
+        }
+
+        /* Navegación */
+        .navbar {
+            position: fixed; width: 100%; top: 0; background-color: var(--nav-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 1000; border-bottom: 1px solid var(--border-color); 
+            transition: all var(--transition-speed);
+        }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; height: 80px; width: 90%; max-width: 1200px; margin: 0 auto;}
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); text-decoration: none; letter-spacing: -0.5px; }
+        .logo span { color: var(--primary-color); }
+
+        /* Botón Theme Toggle */
+        .theme-toggle {
+            background: var(--bg-light); border: 1px solid var(--border-color); cursor: pointer;
+            width: 42px; height: 42px; border-radius: 50%; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+        }
+        .theme-toggle svg { position: absolute; width: 20px; height: 20px; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .moon-icon { opacity: 1; transform: translateY(0) rotate(0deg); color: var(--text-gray); }
+        .sun-icon { opacity: 0; transform: translateY(30px) rotate(45deg); color: #F59E0B; }
+        [data-theme="dark"] .moon-icon { opacity: 0; transform: translateY(-30px) rotate(-45deg); }
+        [data-theme="dark"] .sun-icon { opacity: 1; transform: translateY(0) rotate(0deg); }
+
+        /* Fondo y Estructura */
+        .profile-section {
+            padding: 120px 0 60px; 
+            background-image: radial-gradient(var(--pattern-color) 1.5px, transparent 1.5px);
+            background-size: 35px 35px; min-height: 100vh;
+        }
+        .profile-wrap { max-width: 800px; margin: 0 auto; }
+        
+        .info-card { 
+            background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); 
+            padding: 30px; text-align: left; border: 1px solid var(--border-color);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+            margin-bottom: 24px;
+        }
+
+        /* Formularios */
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+        .form-control, .form-select { 
+            background-color: var(--bg-light); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-dark); 
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus { 
+            background-color: var(--white); 
+            border-color: var(--primary-color); 
+            box-shadow: 0 0 0 3px var(--primary-light); 
+            color: var(--text-dark);
+        }
+        
+        .btn-submit { 
+            background-color: var(--primary-color); 
+            color: #fff; 
+            transition: all 0.3s; 
+            border: none;
+            padding: 14px;
+            font-weight: 700;
+            border-radius: 12px;
+            width: 100%;
+        }
+        .btn-submit:hover { 
+            background-color: var(--primary-dark); 
+            color: #fff; 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-sm);
+        }
+
+        #estado-container { display: none; margin-top: 15px; border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+    <!-- Navegación -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">Admin<span>SierrasWeb</span></a>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar Tema">
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </nav>
+
+    <main class="profile-section">
+        <div class="container profile-wrap">
+            
+            <div class="info-card">
+                <h3 class="mb-4" style="color: var(--text-dark); font-weight: 800;"><i class="fas fa-edit" style="color: var(--primary-color);"></i> Gestión de Negocios</h3>
+                
+                <div class="mb-4">
+                    <label class="form-label">🔎 Seleccionar Registro Existente:</label>
+                    <select id="select-buscar" class="form-select" onchange="cargarDatosEnFormulario()">
+                        <option value="">Cargando base de datos...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">ID Único (sin espacios)</label>
+                        <input type="text" id="id_negocio" class="form-control" placeholder="ejp_construcciones" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Nombre Comercial</label>
+                        <input type="text" id="nombre" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ubicación</label>
+                        <input type="text" id="ubicacion" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono (Llamadas)</label>
+                        <input type="text" id="telefono" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">WhatsApp (ej: 5492665...)</label>
+                        <input type="text" id="whatsapp" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">URL del Logo</label>
+                        <input type="text" id="logo" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción Completa</label>
+                        <textarea id="descripcion" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Servicios (Un servicio por renglón)</label>
+                        <textarea id="servicios" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Galería de fotos (Una URL por renglón)</label>
+                        <textarea id="galeria" class="form-control" rows="4"></textarea>
+                    </div>
+                    
+                    <h5 class="mt-4 mb-2 fw-bold" style="color: var(--primary-color);">Redes Sociales y Extras</h5>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Instagram</label>
+                        <input type="text" id="red_instagram" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Facebook</label>
+                        <input type="text" id="red_facebook" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">YouTube</label>
+                        <input type="text" id="red_youtube" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">LinkedIn</label>
+                        <input type="text" id="red_linkedin" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">TikTok</label>
+                        <input type="text" id="red_tiktok" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Sitio Web</label>
+                        <input type="text" id="red_web" class="form-control">
+                    </div>
+                    <div class="col-12 mt-3">
+                        <label class="form-label">Link Google Apps Script (Reseñas)</label>
+                        <input type="text" id="link_resenas" class="form-control">
+                    </div>
+                </div>
+
+                <button id="btn-guardar" class="btn-submit mt-4" onclick="guardarEnGitHub()">
+                    <i class="fas fa-save me-2"></i> Guardar en Base de Datos
+                </button>
+
+                <div id="estado-container" class="alert mt-3" role="alert"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- LÓGICA MODO OSCURO ---
+        const htmlElement = document.documentElement;
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            htmlElement.setAttribute('data-theme', 'dark');
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                htmlElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // ==========================================
+        // CONFIGURACIÓN DE GITHUB 
+        // ==========================================
+        const GITHUB_TOKEN = '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'; 
+        const GITHUB_USER = 'sierrasweb';
+        const GITHUB_REPO = 'oficios';
+        const FILE_PATH = 'laburante/negocios.json';
+        // ==========================================
+
+        const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`;
+        let baseDatos = {};
+
+        const utf8ToBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
+        const base64ToUtf8 = (str) => decodeURIComponent(escape(atob(str)));
+
+        document.addEventListener('DOMContentLoaded', cargarDatosBase);
+
+        async function cargarDatosBase() {
+            try {
+                const res = await fetch(apiUrl, { headers: { 'Authorization': `token ${GITHUB_TOKEN}` } });
+                if (!res.ok) throw new Error('Error al conectar con la base de datos.');
+                const fileData = await res.json();
+                
+                if (fileData.content) {
+                    baseDatos = JSON.parse(base64ToUtf8(fileData.content));
+                    poblarSelect();
+                }
+            } catch (err) {
+                mostrarEstado(err.message, 'alert-danger');
+            }
+        }
+
+        function poblarSelect() {
+            const select = document.getElementById('select-buscar');
+            select.innerHTML = '<option value="">-- ✨ Crear Nuevo Negocio --</option>';
+            for (const id in baseDatos) {
+                select.innerHTML += `<option value="${id}">✏️ ${baseDatos[id].nombre || id}</option>`;
+            }
+        }
+
+        function cargarDatosEnFormulario() {
+            const id = document.getElementById('select-buscar').value;
+            const idInput = document.getElementById('id_negocio');
+
+            if (!id) {
+                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                idInput.disabled = false; return;
+            }
+
+            const item = baseDatos[id];
+            idInput.value = id; idInput.disabled = true;
+
+            document.getElementById('nombre').value = item.nombre || '';
+            document.getElementById('ubicacion').value = item.ubicacion || '';
+            document.getElementById('whatsapp').value = item.whatsapp || '';
+            document.getElementById('telefono').value = item.telefono || '';
+            document.getElementById('descripcion').value = item.descripcion || '';
+            document.getElementById('servicios').value = Array.isArray(item.servicios) ? item.servicios.join('\n') : '';
+            document.getElementById('galeria').value = Array.isArray(item.galeria) ? item.galeria.join('\n') : '';
+            document.getElementById('logo').value = item.logo || '';
+            document.getElementById('link_resenas').value = item.link_resenas || '';
+            
+            const redes = item.redes || {};
+            document.getElementById('red_instagram').value = redes.instagram || '';
+            document.getElementById('red_facebook').value = redes.facebook || '';
+            document.getElementById('red_youtube').value = redes.youtube || '';
+            document.getElementById('red_linkedin').value = redes.linkedin || '';
+            document.getElementById('red_tiktok').value = redes.tiktok || '';
+            document.getElementById('red_web').value = redes.web || '';
+        }
+
+        async function guardarEnGitHub() {
+            const id = document.getElementById('id_negocio').value.trim().toLowerCase().replace(/\s+/g, '_');
+            if (!id) return mostrarEstado('El ID es obligatorio', 'alert-danger');
+
+            const btn = document.getElementById('btn-guardar');
+            btn.disabled = true; btn.innerText = 'Guardando...';
+            mostrarEstado('Procesando datos...', 'alert-info');
+
+            try {
+                const resGet = await fetch(apiUrl, { headers: { 'Authorization': `token ${GITHUB_TOKEN}` } });
+                const fileData = await resGet.json();
+
+                baseDatos[id] = {
+                    nombre: document.getElementById('nombre').value.trim(),
+                    ubicacion: document.getElementById('ubicacion').value.trim(),
+                    whatsapp: document.getElementById('whatsapp').value.trim(),
+                    telefono: document.getElementById('telefono').value.trim(),
+                    descripcion: document.getElementById('descripcion').value.trim(),
+                    servicios: document.getElementById('servicios').value.split('\n').map(s=>s.trim()).filter(s=>s.length>0),
+                    logo: document.getElementById('logo').value.trim(),
+                    galeria: document.getElementById('galeria').value.split('\n').map(s=>s.trim()).filter(s=>s.length>0),
+                    redes: {
+                        instagram: document.getElementById('red_instagram').value.trim(),
+                        facebook: document.getElementById('red_facebook').value.trim(),
+                        youtube: document.getElementById('red_youtube').value.trim(),
+                        linkedin: document.getElementById('red_linkedin').value.trim(),
+                        tiktok: document.getElementById('red_tiktok').value.trim(),
+                        web: document.getElementById('red_web').value.trim()
+                    },
+                    link_resenas: document.getElementById('link_resenas').value.trim()
+                };
+
+                const resPut = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `Actualizado: ${id}`,
+                        content: utf8ToBase64(JSON.stringify(baseDatos, null, 2)),
+                        sha: fileData.sha 
+                    })
+                });
+
+                if (!resPut.ok) throw new Error('Error al guardar.');
+
+                mostrarEstado('¡Guardado exitosamente!', 'alert-success');
+                poblarSelect();
+                document.getElementById('select-buscar').value = id;
+            } catch (error) {
+                mostrarEstado(error.message, 'alert-danger');
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-save me-2"></i> Guardar en Base de Datos';
+            }
+        }
+
+        function mostrarEstado(mensaje, clase) {
+            const el = document.getElementById('estado-container');
+            el.style.display = 'block';
+            el.innerText = mensaje;
+            el.className = `alert ${clase} mt-3 fw-bold`; 
+        }
+    </script>
+</body>
+</html>
